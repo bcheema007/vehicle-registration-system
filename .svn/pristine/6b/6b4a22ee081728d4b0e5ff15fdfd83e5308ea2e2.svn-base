@@ -1,0 +1,124 @@
+/**
+ * Class for managing the rental system.
+ */
+
+package model;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import model.vehicles.BiCycle;
+import model.vehicles.Car;
+import model.vehicles.MotorBike;
+import model.vehicles.Vehicle;
+
+/**
+ * @author alone117
+ * @version Fall 2019
+ *
+ */
+public class RentalManager {
+
+    /**
+     * The list containing the Vehicles for rent.
+     */
+    private final Map<Integer, Vehicle> myVehicleList;
+
+    /**
+     * A reference to the Registration object created for registering/login.
+     */
+    private final Registration myRegistration;
+
+    /**
+     * Keep track of vehicleID number as Vehicle objects get added to myVehicleList.
+     */
+    private int myVehicleIDCount;
+
+    /**
+     * Parameterized constructor that takes in a Registration object as a parameter.
+     * Initializes the myRegistration and myVehicleList fields. Checks whether the parameter
+     * contains a null value or not.
+     * 
+     * @param theRegistrationObject The Registration object to bed referenced to.
+     * @throws NullPointerException if parameter contains a null value.
+     */
+    public RentalManager(final Registration theRegistrationObject) {
+
+        this.myRegistration = Objects.requireNonNull(theRegistrationObject);
+
+        myVehicleIDCount = 0;
+
+        this.myVehicleList = generateInventory();
+
+    }
+
+    /**
+     * Creates an inventory of Vehicle type objects using a Map.
+     * 
+     * @return A Map containing as key the vehicleID and as value a Vehicle object.
+     */
+    public final Map<Integer, Vehicle> generateInventory() {
+
+        final Map<Integer, Vehicle> vehicleMap = new HashMap<>();
+
+        vehicleMap.put(++myVehicleIDCount, new Car(myVehicleIDCount, "Mercedes", "V100", true,
+                                                   false, false, false));
+        vehicleMap.put(++myVehicleIDCount,
+                       new Car(myVehicleIDCount, "BMW", "V101", true, true, true, false));
+        vehicleMap.put(++myVehicleIDCount,
+                       new Car(myVehicleIDCount, "Tesla", "V102", true, true, true, true));
+        vehicleMap.put(++myVehicleIDCount,
+                       new MotorBike(myVehicleIDCount, "Bike1", "B100", true, false));
+        vehicleMap.put(++myVehicleIDCount,
+                       new MotorBike(myVehicleIDCount, "Bike2", "B101", true, true));
+        vehicleMap.put(++myVehicleIDCount,
+                       new BiCycle(myVehicleIDCount, "Roadies", "C100", true, "Road"));
+        vehicleMap.put(++myVehicleIDCount,
+                       new BiCycle(myVehicleIDCount, "Cruise", "C101", true, "Cruiser"));
+        vehicleMap.put(++myVehicleIDCount,
+                       new BiCycle(myVehicleIDCount, "Mount", "C102", true, "Mountain"));
+
+        return vehicleMap;
+
+    }
+
+    /**
+     * What is in the current inventory?
+     * 
+     * @return A Map containing the list of Vehicles in inventory.
+     */
+    public Map<Integer, Vehicle> getMyVehicleList() {
+
+        return myVehicleList;
+
+    }
+
+    /**
+     * Prints out the list of Vehicles available to rent.
+     */
+    public void printOptions() {
+
+        System.out.println();
+
+        System.out.println("*************List of available vehicles:******************");
+
+        for (final Integer x : this.getMyVehicleList().keySet()) {
+
+            System.out.println(this.getMyVehicleList().get(x).toString());
+
+        }
+
+    }
+
+    /**
+     * What is the current Registration object being referred to?
+     * 
+     * @return The Registration object currently being referenced.
+     */
+    public Registration getMyRegistration() {
+
+        return myRegistration;
+
+    }
+
+}

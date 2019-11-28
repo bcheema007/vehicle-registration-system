@@ -1,0 +1,8 @@
+src/model/Registration.java:117:	LocalVariableCouldBeFinal: Local variable 'username' could be declared final
+src/model/Registration.java:117:	LocalVariableCouldBeFinal: Local variable 'username' could be declared final
+src/model/Registration.java:119:	CollapsibleIfStatements: These nested if statements could be combined
+src/model/Registration.java:119:	CollapsibleIfStatements: These nested if statements could be combined
+src/model/User.java:107:	BooleanGetMethodName: A getX() method which returns a boolean should be named isX()
+src/model/User.java:107:	BooleanGetMethodName: A getX() method which returns a boolean should be named isX()
+src/model/User.java:154:	ConfusingTernary: Avoid if (x != y) ..; else ..;
+src/model/User.java:154:	ConfusingTernary: Avoid if (x != y) ..; else ..;

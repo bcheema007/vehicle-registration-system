@@ -1,0 +1,166 @@
+/**
+ * JUnit test for MotorBike class.
+ */
+
+package junitests;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Objects;
+import model.vehicles.MotorBike;
+import org.junit.Before;
+import org.junit.Test;
+
+/**
+ * @author alone117
+ * @version Fall 2019
+ *
+ */
+public class MotorBikeTest { 
+
+    /**
+     * First MotorBike object to be instantiated.
+     */
+    private MotorBike myM1;
+
+    /**
+     * Second MotorBike object to be instantiated.
+     */
+    private MotorBike myM2;
+
+    /**
+     * Instantiates MotorBike objects.
+     */
+    @Before
+    public void setUp() {
+
+        myM1 = new MotorBike(1, "Motor", "B100", true, true);
+        myM2 = new MotorBike(2, "Bike", "B101", true, false);
+
+    }
+
+    /**
+     * Tests whether hashcode for two equal MotorBike objects are equivalent.
+     */
+    @Test
+    public void testHashCode() {
+
+        assertEquals("HashCode method failed - values",
+                     Objects.hash(myM1.getMyVehicleID(), myM1.getMyName(), myM1.getMyVIN(),
+                                  myM1.isMyRent(), myM1.isMyTouring()),
+                     myM1.hashCode());
+
+        final MotorBike mb3 = new MotorBike(1, "Motor", "B100", true, true);
+        assertEquals("HashCode method failed - equals constraint", myM1.hashCode(),
+                     mb3.hashCode());
+
+    }
+
+    /**
+     * Test whether correct rental amount is returned from calculateRentalAmount method in the
+     * MotorBike class.
+     */
+    @Test
+    public void testCalculateRentalAmount() {
+
+        final BigDecimal rent1 = myM1.calculateRentalAmount();
+        final BigDecimal rent2 = myM2.calculateRentalAmount();
+
+        // with myTouring having a value as true
+        assertEquals("Incorrect rental amount - calculateRentalAmount failed",
+                     myM1.getMyRentalAmount(), rent1);
+
+        // with myTouring having a value as false
+        assertEquals("Incorrect rental amount - calculateRentalAmount failed",
+                     myM2.getMyRentalAmount(), rent2);
+
+    }
+
+    /**
+     * Test whether correct string representation of MotorBike object is produced once toString
+     * is called.
+     */
+    @Test
+    public void testToString() {
+
+        assertEquals("Parameterized constructor,two parameters toString format is incorrect",
+                     "MotorBike (ID:1, Name:Motor, VIN:B100, CanRent?:true, IsTouring?:true)",
+                     myM1.toString());
+
+    }
+
+    /**
+     * Tests whether two MotorBike objects are equal by positive tests which include reflexive,
+     * and same value comparison tests. Also test MotorBike objects by negative tests which
+     * include checking for null value, different value comparison, and different object class
+     * tests.
+     */
+    @Test
+    public void testEqualsObjectPositive() {
+
+        final MotorBike mb3 = new MotorBike(1, "Motor", "B100", true, true);
+
+        // reflexive property is satisfied
+        assertEquals("Equals failed - reflexive", myM1, myM1);
+
+        // if both MotorBike objects have the same vehicleID, name, VIN, canRent, and isTouring
+        // values.
+        assertEquals("Equals failed - value equality", myM1, mb3);
+
+    }
+
+    /**
+     * Tests whether two MotorBike objects are equal by positive tests which include reflexive,
+     * and same value comparison tests. Also test MotorBike objects by negative tests which
+     * include checking for null value, different value comparison, and different object class
+     * tests.
+     */
+    @Test
+    public void testEqualsObjectNegative() {
+
+        // null object
+        assertNotEquals("Equals failed - null", myM1, null);
+
+        // other MotorBike object has different vehicleID, name, VIN, canRent, and isTouring
+        // values.
+        assertNotEquals("Equals failed - different values", myM1, myM2);
+
+        // other object is of a different class
+        assertNotEquals("Equals failed - different class", myM1, new ArrayList<Integer>());
+
+    }
+
+    /**
+     * Test for MotorBike constructor that takes in five parameters. Checks to see expected and
+     * actual values are equal when the fields are initialized, and checks for null values.
+     */
+    @Test
+    public void testMotorBikeIntStringStringBooleanBoolean() {
+
+        assertNotNull("Value for vehicleID is null", myM1.getMyVehicleID());
+        assertNotNull("Value for name is null", myM1.getMyName());
+        assertNotNull("Value for VIN is null", myM1.getMyVIN());
+        assertEquals("vehicleID does not match", 1, myM1.getMyVehicleID());
+        assertEquals("Name does not match", "Motor", myM1.getMyName());
+        assertEquals("VIN does not match", "B100", myM1.getMyVIN());
+        assertEquals("Value for myRent does not match", true, myM1.isMyRent());
+        assertEquals("Value for myTouring does not match", true, myM1.isMyTouring());
+
+    }
+
+    /**
+     * Test getter for whether MotorBike can tour or not.
+     */
+    @Test
+    public void testIsMyTouring() {
+
+        assertEquals("Getter for myTouring failed - parmeterized constructor", true,
+                     myM1.isMyTouring());
+
+    }
+
+}

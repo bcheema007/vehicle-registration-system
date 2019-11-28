@@ -1,0 +1,269 @@
+
+/*
+ * This file is the registration class for the Vehicle Rental System.
+ * 
+ * TCSS 305 - Rentz
+ */
+
+package model;
+
+import java.util.Map;
+import java.util.Objects;
+import java.util.Scanner;
+import java.util.Set;
+import java.util.regex.Pattern;
+import utility.FileLoader;
+
+/**
+ * Represents User Sign-in Object.
+ * 
+ * Methods of this class throw NullPointerException if required parameters are null.
+ * 
+ * @author alone117
+ * @version Fall 2019
+ */
+
+public class Registration {
+
+    /**
+     * User Storage File.
+     */
+    public static final String USERFILE_NAME = "./resources/registeredusers.txt";
+    // "./files/registeredusers.txt"; kept getting FileNotFoundException
+
+    /**
+     * Scanner object to be used throughout class to accept user input.
+     */
+    public static final Scanner CONSOLE = new Scanner(System.in);
+
+    /**
+     * The registered user list for signin.
+     */
+    private final Map<String, User> myUserList;
+
+    /**
+     * Constructs a sigin/registration system.
+     * 
+     * 
+     */
+    public Registration() {
+        myUserList = FileLoader.readItemsFromFile(USERFILE_NAME);
+    }
+
+    /**
+     * display sign-in or registration options.
+     * 
+     * @return True or false on whether login was successful or not.
+     */
+    public boolean printSignin() {
+
+        final boolean truthValue;
+        final int userOption = intro();
+        final String printPassword = "Password:";
+        String username;
+        String password;
+
+        if (userOption == 1) {
+            final User newUser;
+            username = CONSOLE.next();
+            System.out.print(printPassword);
+            password = CONSOLE.next();
+
+            final Set<String> usernameSet = myUserList.keySet();
+
+            while (usernameSet.contains(username)) {
+                System.out.print("User already exists, enter different user name:");
+                username = CONSOLE.next();
+                System.out.print("Enter Password:");
+                password = CONSOLE.next();
+            }
+
+            boolean validPassword = validatePassword(password, username);
+
+            if (!validPassword) {
+
+                while (!validPassword) {
+
+                    System.out.println("Password Does not Comply:");
+                    System.out.println();
+                    System.out.println("1) Password must be minimum length of 3 characters.");
+                    System.out.println("2) Password must be maximum length of 12 characters.");
+                    System.out.println("3) Password must contain at least one number.");
+                    System.out.println("4) Password must be all lowercase.");
+                    System.out.println("5) Password must contain an exclamation point.");
+                    System.out.println("6) Password must not contain your username");
+                    System.out.println();
+                    System.out.print("Re-enter Password: ");
+                    password = CONSOLE.next();
+                    validPassword = validatePassword(password, username);
+
+                }
+
+            }
+
+            System.out.print("isVIP(true/false):");
+            final boolean isVIPStatus = CONSOLE.nextBoolean();
+            newUser = new User(username, password, isVIPStatus);
+
+            final boolean result = register(newUser);
+            if (result) {
+                System.out.println("Registration Successful");
+            }
+            truthValue = false;
+        } else {
+            username = CONSOLE.next();
+            System.out.print(printPassword);
+            password = CONSOLE.next();
+            boolean loginResult = login(username, password);
+            if (!loginResult) { // login validation
+                while (!loginResult) {
+                    System.out.println();
+                    System.out.println("Wrong Credentials");
+                    System.out.print("Enter User Name:");
+                    username = CONSOLE.next();
+                    System.out.print("Enter Password: ");
+                    password = CONSOLE.next();
+                    loginResult = login(username, password);
+                }
+            }
+            System.out.println("Login Successful");
+            truthValue = true;
+        }
+        CONSOLE.close();
+        return truthValue;
+    }
+
+    /**
+     * A utility method to display the opening message whenever the print sign-in method is
+     * called.
+     * 
+     * @return an integer value of 1 or 2 to indicate the option user picked.
+     */
+    private int intro() {
+        System.out.print("Enter 1 or 2 (1. New Registration 2. Login):");
+        final int userOption = CONSOLE.nextInt();
+        System.out.println("You entered option " + userOption);
+        System.out.println();
+        final String asteriks = "**********************";
+        System.out.println(asteriks);
+        System.out.println(" Enter Details");
+        System.out.println(asteriks);
+        System.out.print("User Name:");
+
+        return userOption;
+    }
+
+    /**
+     * Verify Sign-in procedure.
+     * 
+     * @param theUsername username for sign-in
+     * @param thePassword password for signin
+     * @return sign-in success
+     * @throws NullPointerException if the parameters passed to the method contain null values.
+     * @throws IllegalArgumentException if any of the parameters are empty strings.
+     */
+    public boolean login(final String theUsername, final String thePassword) {
+
+        Objects.requireNonNull(theUsername);
+        Objects.requireNonNull(thePassword);
+
+        if ("".equals(theUsername) || "".equals(thePassword)) {
+
+            throw new IllegalArgumentException();
+
+        }
+
+        boolean loginResult = false;
+
+        for (final String username : myUserList.keySet()) {
+            if (username.equals(theUsername)
+                && myUserList.get(username).getMyPassword().equals(thePassword)) {
+
+                loginResult = true;
+            }
+        }
+
+        return loginResult;
+    }
+
+    /**
+     * Adds a user to the registered user list.
+     * 
+     * @param theUser an order to add to this shopping cart
+     * @return true/false returns if registration is successful
+     */
+    public boolean register(final User theUser) {
+
+        myUserList.put(theUser.getMyName(), theUser);
+
+        FileLoader.writeUserToFile(USERFILE_NAME, theUser);
+
+        return true;
+
+    }
+
+    /**
+     * This is a utility method to verify that a new user's password matches certain
+     * requirements in order for the user to be registered to the system.
+     * 
+     * @param thePassword The password that is going to checked for the requirements.
+     * @param theUsername The username the user wants to use for new registration.
+     * @return true or false on whether the user's password is valid or not.
+     */
+    private boolean validatePassword(final String thePassword, final String theUsername) {
+
+        final int minPasswordLength = 3;
+        final int maxPasswordLength = 12;
+
+        boolean validPassword = false;
+
+        if (thePassword.length() >= minPasswordLength
+            && thePassword.length() <= maxPasswordLength
+            && Pattern.compile("[0-9]").matcher(thePassword).find() // checks whether password
+                                                                    // contains a number
+            && thePassword.equals(thePassword.toLowerCase()) && thePassword.contains("!")
+            && !(thePassword.contains(theUsername))) {
+
+            validPassword = true;
+
+        }
+
+        return validPassword;
+
+    }
+
+    /**
+     * Empties the user list.
+     */
+    public void clear() {
+
+        myUserList.clear();
+
+    }
+
+    @Override
+    /**
+     * String representation of the object in the format Registered UserList {key1=value1,
+     * key2=value2}
+     * 
+     * @return the string representation of the Registration object.
+     */
+    public String toString() {
+
+        return "Registered UserList " + myUserList.toString();
+
+    }
+
+    /**
+     * Returns a HashMap containing all the registered users with usernames as keys and User
+     * objects as values.
+     * 
+     * @return HashMap containing all the registered users.
+     */
+    public Map<String, User> getMyUserList() {
+
+        return myUserList;
+
+    }
+
+}
